@@ -1,754 +1,1081 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>yourname — dev</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>YOUR NAME</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg:       #0d0d0d;
-    --bg2:      #111111;
-    --bg3:      #1a1a1a;
-    --line:     #222222;
-    --accent:   #c8ff00;
-    --accent2:  #00ffcc;
-    --dim:      #444;
-    --muted:    #666;
-    --mid:      #999;
-    --text:     #e8e8e8;
-    --keyword:  #c8ff00;
-    --string:   #00ffcc;
-    --comment:  #555;
-    --fn:       #79b8ff;
-    --num:      #f97583;
-  }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    overflow-x: hidden;
-  }
+body {
+  background: #111;
+  color: #f2f2f2;
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+}
 
-  /* ─── SCANLINES OVERLAY ─── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 9999;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.03) 2px,
-      rgba(0,0,0,0.03) 4px
-    );
-  }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.04) 0px,
+    rgba(0,0,0,0.04) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
 
-  /* ─── TOP BAR ─── */
-  #topbar {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    height: 42px;
-    background: #0a0a0a;
-    border-bottom: 1px solid var(--line);
-    display: flex; align-items: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-  }
-  .tb-dots {
-    display: flex; gap: 6px; padding: 0 16px;
-    border-right: 1px solid var(--line);
-    height: 100%; align-items: center;
-  }
-  .tb-dot {
-    width: 11px; height: 11px; border-radius: 50%;
-  }
-  .tb-dot.red   { background: #ff5f57; }
-  .tb-dot.yel   { background: #ffbd2e; }
-  .tb-dot.grn   { background: #28c840; }
+#shell {
+  max-width: 860px;
+  margin: 32px auto;
+  background: #1c1c1c;
+  border: 3px solid #333;
+  border-radius: 12px 12px 24px 24px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 #444,
+    0 0 0 8px #181818,
+    0 0 0 11px #2a2a2a;
+}
 
-  .tb-tabs {
-    display: flex; height: 100%; overflow: hidden;
-  }
-  .tb-tab {
-    padding: 0 20px;
-    height: 100%; display: flex; align-items: center; gap: 8px;
-    border-right: 1px solid var(--line);
-    color: var(--muted); cursor: pointer;
-    font-size: 11.5px; white-space: nowrap;
-    transition: background 0.15s, color 0.15s;
-    text-decoration: none;
-  }
-  .tb-tab.active {
-    background: var(--bg2);
-    color: var(--text);
-    border-bottom: 1px solid var(--accent);
-  }
-  .tb-tab:hover { background: var(--bg3); color: var(--text); }
-  .tb-ext { color: var(--muted); }
+#grille {
+  background: #161616;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #2a2a2a;
+}
+.grille-dots {
+  display: grid;
+  grid-template-columns: repeat(12, 6px);
+  grid-template-rows: repeat(3, 6px);
+  gap: 4px;
+}
+.grille-dot { width: 6px; height: 6px; border-radius: 50%; background: #2e2e2e; }
+.grille-dot:nth-child(3n) { background: #252525; }
+.cabinet-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: #555;
+  letter-spacing: 3px;
+}
 
-  .tb-right {
-    margin-left: auto;
-    padding: 0 16px;
-    color: var(--muted);
-    display: flex; align-items: center; gap: 16px;
-  }
-  .tb-status {
-    display: flex; align-items: center; gap: 6px;
-  }
-  .tb-status-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--accent); animation: blink 3s infinite;
-  }
-  @keyframes blink { 0%,90%,100%{opacity:1} 95%{opacity:0.2} }
+#marquee {
+  background: #e8002d;
+  overflow: hidden;
+  border-top: 2px solid #ff2244;
+  border-bottom: 2px solid #aa0020;
+}
+.marquee-track {
+  display: flex;
+  white-space: nowrap;
+  animation: scroll 20s linear infinite;
+}
+@keyframes scroll { to { transform: translateX(-50%); } }
+.marquee-track span {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: #fff;
+  padding: 9px 32px;
+  letter-spacing: 2px;
+  display: inline-block;
+}
+.marquee-track .sep { color: rgba(255,255,255,0.4); padding: 9px 0; }
 
-  /* ─── LAYOUT ─── */
-  .editor-wrap {
-    display: flex;
-    padding-top: 42px;
-    min-height: 100vh;
-  }
+#bezel {
+  background: #141414;
+  padding: 16px 20px;
+}
+#screen {
+  background: #0d0d0d;
+  border: 3px solid #000;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+#screen::before, #screen::after {
+  content: '+';
+  position: absolute;
+  font-size: 10px;
+  color: #222;
+  z-index: 10;
+  line-height: 1;
+}
+#screen::before { top: 6px; left: 8px; }
+#screen::after  { top: 6px; right: 8px; }
 
-  /* ─── SIDEBAR (file tree) ─── */
-  #sidebar {
-    width: 220px; flex-shrink: 0;
-    background: #0a0a0a;
-    border-right: 1px solid var(--line);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11.5px;
-    padding-top: 1rem;
-    position: sticky; top: 42px;
-    height: calc(100vh - 42px);
-    overflow-y: auto;
-  }
-  .tree-section {
-    color: var(--muted);
-    padding: 0 12px 6px;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-  }
-  .tree-item {
-    display: flex; align-items: center; gap: 8px;
-    padding: 5px 12px; cursor: pointer;
-    color: var(--mid);
-    text-decoration: none;
-    transition: background 0.1s, color 0.1s;
-  }
-  .tree-item:hover, .tree-item.active {
-    background: var(--bg3);
-    color: var(--text);
-  }
-  .tree-item.active { color: var(--accent); }
-  .tree-icon { color: var(--dim); font-size: 11px; width: 12px; }
-  .tree-arrow { color: var(--dim); }
-  .tree-indent { padding-left: 28px; }
+#hero {
+  padding: 56px 48px 48px;
+  border-bottom: 2px solid #1a1a1a;
+}
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+.score-block { text-align: center; }
+.score-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: #e8002d;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 4px;
+}
+.score-value {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #fff;
+}
 
-  /* ─── MAIN EDITOR ─── */
-  #editor {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-  }
+.hero-main { text-align: center; }
+.player-tag {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #e8002d;
+  letter-spacing: 3px;
+  display: block;
+  margin-bottom: 16px;
+  animation: flicker 6s infinite;
+}
+@keyframes flicker {
+  0%, 92%, 96%, 100% { opacity: 1; }
+  94% { opacity: 0.3; }
+}
+.hero-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(22px, 5vw, 40px);
+  color: #ffe600;
+  text-shadow: 3px 3px 0 #b39d00;
+  line-height: 1.5;
+  display: block;
+  margin-bottom: 20px;
+}
+.hero-sub {
+  font-size: 0.95rem;
+  color: #666;
+  letter-spacing: 1px;
+  margin-bottom: 36px;
+}
+.lives-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.lives-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: #555;
+  letter-spacing: 1px;
+}
+.heart {
+  width: 14px;
+  height: 14px;
+  background: #e8002d;
+  clip-path: polygon(25% 0%, 50% 15%, 75% 0%, 100% 25%, 100% 50%, 50% 100%, 0% 50%, 0% 25%);
+}
+.heart.empty { background: #2a2a2a; }
 
-  .line-numbers {
-    width: 52px; flex-shrink: 0;
-    background: var(--bg2);
-    border-right: 1px solid var(--line);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--dim);
-    text-align: right;
-    padding: 2rem 12px;
-    line-height: 1.9;
-    user-select: none;
-    position: sticky; left: 0;
-  }
+.px-rule {
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    #e8002d 0, #e8002d 8px,
+    #ffe600 8px, #ffe600 16px,
+    #00aaff 16px, #00aaff 24px,
+    #00cc88 24px, #00cc88 32px
+  );
+  margin: 32px 0 0;
+}
 
-  .code-area {
-    flex: 1;
-    padding: 2rem 2.5rem;
-    overflow-y: auto;
-  }
+.section {
+  padding: 48px;
+  border-bottom: 2px solid #1a1a1a;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.section-badge {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  padding: 5px 10px;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+.badge-red    { background: #e8002d; color: #fff; }
+.badge-blue   { background: #0055ff; color: #fff; }
+.badge-yellow { background: #ffe600; color: #000; }
+.badge-green  { background: #00cc88; color: #000; }
+.section-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.section-rule { flex: 1; height: 1px; background: #222; }
 
-  /* ─── SECTIONS AS CODE BLOCKS ─── */
-  .code-section {
-    margin-bottom: 5rem;
-    opacity: 0; transform: translateY(16px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-  .code-section.visible { opacity: 1; transform: none; }
+.char-card {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0;
+  border: 2px solid #222;
+}
+.char-left {
+  background: #0d0d0d;
+  border-right: 2px solid #222;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.sprite {
+  width: 96px;
+  height: 96px;
+  background: #1a1a1a;
+  border: 2px solid #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+}
+.char-id {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: #ffe600;
+  text-align: center;
+  line-height: 2;
+  border: 1px solid #333;
+  padding: 6px 8px;
+  width: 100%;
+}
+.char-id .char-class { color: #888; font-size: 6px; display: block; margin-top: 4px; }
+.stat-list { width: 100%; }
+.stat-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.stat-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: #555;
+  letter-spacing: 1px;
+}
+.stat-track {
+  height: 8px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+}
+.stat-fill {
+  height: 100%;
+  width: 0;
+  transition: width 1.2s ease;
+}
+.fill-red    { background: #e8002d; }
+.fill-blue   { background: #0055ff; }
+.fill-yellow { background: #ffe600; }
+.fill-green  { background: #00cc88; }
 
-  .code-comment {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--comment);
-    margin-bottom: 0.4rem;
-    display: block;
-  }
-  .code-line {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    line-height: 1.9;
-    display: block;
-  }
-  .kw  { color: var(--keyword); }
-  .str { color: var(--string); }
-  .fn  { color: var(--fn); }
-  .nm  { color: var(--num); }
-  .cm  { color: var(--comment); }
-  .pl  { color: var(--muted); }
+.char-right { padding: 24px 28px; display: flex; flex-direction: column; justify-content: space-between; }
+.char-bio {
+  font-size: 0.92rem;
+  color: #999;
+  line-height: 1.85;
+  margin-bottom: 20px;
+}
+.char-bio strong { color: #f2f2f2; font-weight: 500; }
+.char-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.spec-item {
+  background: #111;
+  border: 1px solid #222;
+  padding: 10px 12px;
+}
+.spec-key {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: #444;
+  display: block;
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+.spec-val { font-size: 0.82rem; color: #ccc; font-weight: 500; }
 
-  /* ─── HERO ─── */
-  #hero { padding: 0; margin-bottom: 5rem; }
+.inv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 2px;
+  background: #1a1a1a;
+  border: 2px solid #1a1a1a;
+}
+.inv-item {
+  background: #111;
+  padding: 16px 10px 12px;
+  text-align: center;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.inv-item:hover { background: #161616; }
+.inv-item:hover.c-red    { border-color: #e8002d; }
+.inv-item:hover.c-blue   { border-color: #0055ff; }
+.inv-item:hover.c-yellow { border-color: #ffe600; }
+.inv-item:hover.c-green  { border-color: #00cc88; }
+.inv-icon { font-size: 20px; display: block; margin-bottom: 8px; }
+.inv-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: #888;
+  display: block;
+  line-height: 1.8;
+}
+.inv-stars { display: flex; justify-content: center; gap: 2px; margin-top: 6px; }
+.star { width: 5px; height: 5px; background: #333; }
+.star.on { background: #ffe600; }
+.inv-item .eq {
+  position: absolute;
+  top: 4px; right: 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 5px;
+  color: #000;
+  background: #00cc88;
+  padding: 1px 3px;
+}
 
-  .hero-prompt {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; color: var(--muted);
-    margin-bottom: 1.5rem;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .prompt-char { color: var(--accent); }
+/* projects page styles */
+#projects-page {
+  display: none;
+  min-height: 100vh;
+  background: #0d0d0d;
+}
+#projects-page.active { display: block; }
+#main-page.hidden { display: none; }
 
-  .hero-name {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(3rem, 8vw, 6.5rem);
-    font-weight: 600;
-    line-height: 1;
-    letter-spacing: -3px;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-  }
-  .hero-name .acc { color: var(--accent); }
+.page-topbar {
+  background: #161616;
+  border-bottom: 2px solid #1a1a1a;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.back-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #555;
+  background: none;
+  border: 1px solid #333;
+  padding: 7px 12px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.back-btn:hover { color: #f2f2f2; border-color: #666; }
+.page-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #ffe600;
+  letter-spacing: 2px;
+}
+.project-count {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: #444;
+  margin-left: auto;
+}
 
-  .hero-role {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 2.5rem;
-  }
-  .cursor-blink {
-    display: inline-block;
-    width: 9px; height: 16px;
-    background: var(--accent);
-    margin-left: 2px;
-    vertical-align: middle;
-    animation: cur 1.1s step-end infinite;
-  }
-  @keyframes cur { 0%,100%{opacity:1} 50%{opacity:0} }
+.projects-inner { padding: 32px 28px; }
 
-  .hero-links {
-    display: flex; gap: 1.5rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-  }
-  .hero-link {
-    color: var(--mid);
-    text-decoration: none;
-    border-bottom: 1px solid var(--dim);
-    padding-bottom: 1px;
-    transition: color 0.2s, border-color 0.2s;
-  }
-  .hero-link:hover { color: var(--accent); border-color: var(--accent); }
+.cart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2px;
+  background: #1a1a1a;
+  border: 2px solid #1a1a1a;
+}
+.cart {
+  background: #111;
+  display: flex;
+  flex-direction: column;
+}
+.cart-top { height: 10px; width: 100%; }
+.ct-red    { background: #e8002d; }
+.ct-blue   { background: #0055ff; }
+.ct-yellow { background: #ffe600; }
+.ct-green  { background: #00cc88; }
 
-  /* ─── SECTION HEADERS ─── */
-  .sec-header {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 2rem;
-  }
-  .sec-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--muted);
-  }
-  .sec-title {
-    font-size: 1.5rem; font-weight: 600;
-    letter-spacing: -0.5px;
-  }
-  .sec-line {
-    flex: 1; height: 1px; background: var(--line);
-  }
+.cart-label { padding: 0 20px; }
+.cart-label-inner {
+  border-left: 1px solid #222;
+  border-right: 1px solid #222;
+  border-bottom: 1px solid #222;
+  padding: 10px 12px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cart-num { font-family: 'Press Start 2P', monospace; font-size: 7px; color: #444; }
+.cart-badge { font-family: 'Press Start 2P', monospace; font-size: 6px; padding: 2px 6px; }
+.cb-red    { background: #e8002d; color: #fff; }
+.cb-blue   { background: #0055ff; color: #fff; }
+.cb-yellow { background: #ffe600; color: #000; }
+.cb-green  { background: #00cc88; color: #000; }
 
-  /* ─── ABOUT ─── */
-  .about-grid {
-    display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem;
-  }
-  .about-text p {
-    color: var(--mid); line-height: 1.8; margin-bottom: 1.2rem;
-    font-size: 0.95rem;
-  }
-  .about-text p span { color: var(--text); }
+.cart-body { padding: 20px; flex: 1; }
+.cart-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: #f2f2f2;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+.cart-desc { font-size: 0.83rem; color: #666; line-height: 1.75; margin-bottom: 16px; }
+.cart-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px; }
+.cart-tag {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  padding: 3px 7px;
+  border: 1px solid #2a2a2a;
+  color: #555;
+}
+.cart-links { display: flex; gap: 12px; }
+.cart-link {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: #555;
+  text-decoration: none;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 2px;
+  transition: color 0.1s, border-color 0.1s;
+}
+.cart-link:hover { color: #f2f2f2; border-color: #555; }
 
-  .about-terminal {
-    background: #0a0a0a;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .term-bar {
-    background: #111;
-    border-bottom: 1px solid var(--line);
-    padding: 8px 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--muted);
-    display: flex; align-items: center; gap: 6px;
-  }
-  .term-body {
-    padding: 1rem 1.2rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; line-height: 2;
-  }
-  .tl { display: block; }
-  .tl .p { color: var(--accent); }
-  .tl .v { color: var(--string); }
-  .tl .k { color: var(--fn); }
-  .tl .c { color: var(--comment); }
+.cart-slot {
+  background: #111;
+  border: 2px dashed #1e1e1e;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+.cart-slot p {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #2a2a2a;
+  line-height: 2.4;
+  letter-spacing: 1px;
+}
 
-  /* ─── SKILLS ─── */
-  .skills-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-  }
-  .skills-table th {
-    text-align: left; padding: 8px 16px;
-    color: var(--muted); font-weight: 400;
-    border-bottom: 1px solid var(--line);
-    font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
-  }
-  .skills-table td {
-    padding: 10px 16px;
-    border-bottom: 1px solid #161616;
-    vertical-align: top;
-  }
-  .skills-table tr:hover td { background: #111; }
-  .skill-name { color: var(--fn); }
-  .skill-level {
-    display: flex; align-items: center; gap: 8px;
-  }
-  .level-bar {
-    height: 3px; background: var(--line); border-radius: 2px; flex: 1; max-width: 120px;
-  }
-  .level-fill {
-    height: 100%; background: var(--accent); border-radius: 2px;
-    transition: width 1s ease;
-  }
-  .level-text { color: var(--muted); font-size: 11px; }
+#contact-section {
+  padding: 48px;
+}
+.section-head-contact {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: #1a1a1a;
+  border: 2px solid #1a1a1a;
+}
+.contact-left {
+  background: #0d0d0d;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.game-over-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 22px;
+  color: #e8002d;
+  text-shadow: 3px 3px 0 #6a0010;
+  line-height: 1.6;
+  display: block;
+  margin-bottom: 6px;
+}
+.continue-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #444;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 28px;
+}
+.countdown {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 48px;
+  color: #ffe600;
+  text-shadow: 4px 4px 0 #7a6b00;
+  display: block;
+  line-height: 1;
+}
+.contact-note { font-size: 0.85rem; color: #555; line-height: 1.7; margin-top: 20px; }
+.contact-right { background: #111; padding: 32px; }
+.contact-links { list-style: none; }
+.contact-links li {
+  border-bottom: 1px solid #1a1a1a;
+  padding: 14px 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.contact-links li:first-child { padding-top: 0; }
+.contact-links li:last-child  { border-bottom: none; padding-bottom: 0; }
+.cl-key {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: #444;
+  width: 72px;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+.contact-links a { font-size: 0.88rem; color: #888; text-decoration: none; transition: color 0.15s; font-weight: 500; }
+.contact-links a:hover { color: #f2f2f2; }
 
-  /* ─── PROJECTS ─── */
-  .project-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-  }
-  .project-card {
-    background: var(--bg);
-    padding: 1.8rem;
-    transition: background 0.2s;
-    position: relative;
-  }
-  .project-card:hover { background: var(--bg2); }
-  .project-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0;
-    height: 2px; background: var(--accent);
-    transform: scaleX(0); transform-origin: left;
-    transition: transform 0.3s ease;
-  }
-  .project-card:hover::before { transform: scaleX(1); }
+#panel {
+  background: #181818;
+  border-top: 3px solid #0d0d0d;
+  padding: 24px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.dpad-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 30px);
+  grid-template-rows: repeat(3, 30px);
+  gap: 3px;
+}
+.dp {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #444;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: background 0.1s, color 0.1s;
+  cursor: pointer;
+}
+.dp:hover { background: #1e1e1e; color: #f2f2f2; }
+.dp.center { background: #0d0d0d; cursor: default; }
+.dpad-label { font-family: 'Press Start 2P', monospace; font-size: 6px; color: #333; letter-spacing: 1px; }
 
-  .proj-index {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--muted);
-    margin-bottom: 1rem;
-  }
-  .proj-title {
-    font-size: 1.05rem; font-weight: 600;
-    margin-bottom: 0.6rem; color: var(--text);
-  }
-  .proj-desc {
-    font-size: 0.87rem; color: var(--mid);
-    line-height: 1.7; margin-bottom: 1.4rem;
-  }
-  .proj-stack {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-bottom: 1.2rem;
-  }
-  .proj-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10.5px; color: var(--string);
-    background: rgba(0,255,204,0.06);
-    padding: 2px 8px; border-radius: 2px;
-  }
-  .proj-links {
-    display: flex; gap: 1rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11.5px;
-  }
-  .proj-link {
-    color: var(--muted); text-decoration: none;
-    transition: color 0.2s;
-  }
-  .proj-link:hover { color: var(--accent); }
+.btn-cluster { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.btn-row { display: flex; gap: 10px; }
+.ab-btn {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #fff;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.5);
+  position: relative; top: 0;
+  transition: top 0.08s, box-shadow 0.08s;
+  text-decoration: none;
+  display: flex; align-items: center; justify-content: center;
+}
+.ab-btn:active, .ab-btn.pressed { top: 3px; box-shadow: 0 1px 0 rgba(0,0,0,0.5); }
+.btn-red    { background: #c8001e; border-top: 2px solid #ff2244; }
+.btn-blue   { background: #0044cc; border-top: 2px solid #2266ff; }
+.btn-yellow { background: #c8aa00; border-top: 2px solid #ffe600; color: #000; }
+.btn-green  { background: #00885a; border-top: 2px solid #00cc88; }
+.btn-cluster-label { font-family: 'Press Start 2P', monospace; font-size: 6px; color: #333; }
 
-  .proj-placeholder {
-    background: var(--bg);
-    border: 1px dashed var(--dim);
-    padding: 3rem 2rem; text-align: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; color: var(--comment);
-  }
+.panel-center { text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.start-btn {
+  background: #1a1a1a;
+  border: 1px solid #2e2e2e;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: #555;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.start-btn:hover { border-color: #555; color: #f2f2f2; }
+.coin-slot { width: 60px; height: 6px; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 3px; }
 
-  /* ─── CONTACT ─── */
-  .contact-block {
-    max-width: 560px;
-  }
-  .contact-block p {
-    font-size: 0.95rem; color: var(--mid);
-    line-height: 1.8; margin-bottom: 2rem;
-  }
-  .contact-list {
-    list-style: none;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-  }
-  .contact-list li {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .contact-list li:last-child { border-bottom: none; }
-  .cl-label { color: var(--muted); width: 80px; flex-shrink: 0; }
-  .contact-list a {
-    color: var(--string); text-decoration: none;
-    transition: color 0.2s;
-  }
-  .contact-list a:hover { color: var(--accent); }
+#foot {
+  background: #0d0d0d;
+  padding: 10px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px solid #181818;
+}
+.foot-text { font-family: 'Press Start 2P', monospace; font-size: 6px; color: #333; letter-spacing: 1px; }
 
-  /* ─── STATUS BAR ─── */
-  #statusbar {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-    height: 26px;
-    background: var(--accent);
-    display: flex; align-items: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: #000;
-    padding: 0 12px; gap: 20px;
-  }
-  .sb-item { opacity: 0.7; }
-  .sb-item strong { opacity: 1; font-weight: 700; }
-  .sb-right { margin-left: auto; display: flex; gap: 16px; }
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal.on { opacity: 1; transform: none; }
 
-  /* ─── SCROLLBAR ─── */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+@media (max-width: 680px) {
+  #shell { margin: 0; border-radius: 0; box-shadow: none; }
+  .section { padding: 32px 24px; }
+  #hero { padding: 40px 24px 32px; }
+  .char-card { grid-template-columns: 1fr; }
+  .char-left { border-right: none; border-bottom: 2px solid #222; }
+  .contact-grid { grid-template-columns: 1fr; }
+  #panel { justify-content: center; }
+  #contact-section { padding: 32px 24px; }
+  .projects-inner { padding: 24px 16px; }
+}
 
-  /* ─── MOBILE ─── */
-  @media (max-width: 768px) {
-    #sidebar { display: none; }
-    .about-grid { grid-template-columns: 1fr; }
-    .code-area { padding: 1.5rem; }
-    .line-numbers { display: none; }
-    .hero-name { letter-spacing: -2px; }
-  }
 </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div id="topbar">
-  <div class="tb-dots">
-    <div class="tb-dot red"></div>
-    <div class="tb-dot yel"></div>
-    <div class="tb-dot grn"></div>
-  </div>
-  <div class="tb-tabs">
-    <a class="tb-tab active" href="#hero">index<span class="tb-ext">.html</span></a>
-    <a class="tb-tab" href="#about">about<span class="tb-ext">.js</span></a>
-    <a class="tb-tab" href="#skills">skills<span class="tb-ext">.json</span></a>
-    <a class="tb-tab" href="#projects">projects<span class="tb-ext">.md</span></a>
-    <a class="tb-tab" href="#contact">contact<span class="tb-ext">.sh</span></a>
-  </div>
-  <div class="tb-right">
-    <div class="tb-status">
-      <div class="tb-status-dot"></div>
-      available for work
-    </div>
-  </div>
-</div>
+<div id="shell">
 
-<div class="editor-wrap">
+  <!-- MAIN PAGE -->
+  <div id="main-page">
 
-  <!-- SIDEBAR -->
-  <div id="sidebar">
-    <div class="tree-section">Explorer</div>
-    <div class="tree-item active" style="gap:4px">
-      <span class="tree-arrow">▾</span> portfolio
-    </div>
-    <a class="tree-item tree-indent" href="#hero">
-      <span class="tree-icon">⬤</span> index.html
-    </a>
-    <a class="tree-item tree-indent" href="#about">
-      <span class="tree-icon">⬤</span> about.js
-    </a>
-    <a class="tree-item tree-indent" href="#skills">
-      <span class="tree-icon">⬤</span> skills.json
-    </a>
-    <a class="tree-item tree-indent" href="#projects">
-      <span class="tree-icon">⬤</span> projects.md
-    </a>
-    <a class="tree-item tree-indent" href="#contact">
-      <span class="tree-icon">⬤</span> contact.sh
-    </a>
-    <br>
-    <div class="tree-section">Outline</div>
-    <div class="tree-item tree-indent" style="color:var(--fn)">fn hero()</div>
-    <div class="tree-item tree-indent" style="color:var(--fn)">fn about()</div>
-    <div class="tree-item tree-indent" style="color:var(--fn)">fn skills()</div>
-    <div class="tree-item tree-indent" style="color:var(--fn)">fn projects()</div>
-    <div class="tree-item tree-indent" style="color:var(--fn)">fn contact()</div>
-  </div>
-
-  <!-- EDITOR -->
-  <div id="editor">
-
-    <!-- LINE NUMBERS -->
-    <div class="line-numbers" id="line-nums">
-      <!-- filled by JS -->
+    <div id="grille">
+      <div class="grille-dots">
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+      </div>
+      <span class="cabinet-label">ARCADE UNIT 01</span>
+      <div class="grille-dots">
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+        <div class="grille-dot"></div><div class="grille-dot"></div><div class="grille-dot"></div>
+      </div>
     </div>
 
-    <!-- CONTENT -->
-    <div class="code-area">
+    <div id="marquee">
+      <div class="marquee-track">
+        <span>YOUR NAME</span><span class="sep">///</span>
+        <span>DEVELOPER</span><span class="sep">///</span>
+        <span>HIGH SCHOOL</span><span class="sep">///</span>
+        <span>PASSION PROJECT</span><span class="sep">///</span>
+        <span>YOUR NAME</span><span class="sep">///</span>
+        <span>DEVELOPER</span><span class="sep">///</span>
+        <span>HIGH SCHOOL</span><span class="sep">///</span>
+        <span>PASSION PROJECT</span><span class="sep">///</span>
+      </div>
+    </div>
 
-      <!-- HERO -->
-      <section id="hero" class="code-section">
-        <span class="code-comment">// hello, world</span>
-        <div class="hero-prompt">
-          <span class="prompt-char">$</span> whoami
-        </div>
-        <h1 class="hero-name">Your<br><span class="acc">Name.</span></h1>
-        <div class="hero-role">
-          software developer<span class="cursor-blink"></span>
-        </div>
-        <div class="hero-links">
-          <a class="hero-link" href="#projects">projects</a>
-          <a class="hero-link" href="https://github.com/yourusername" target="_blank">github</a>
-          <a class="hero-link" href="https://linkedin.com/in/yourprofile" target="_blank">linkedin</a>
-          <a class="hero-link" href="mailto:you@email.com">email</a>
-        </div>
-      </section>
+    <div id="bezel">
+      <div id="screen">
 
-      <!-- ABOUT -->
-      <section id="about" class="code-section">
-        <div class="sec-header">
-          <span class="sec-num">01</span>
-          <h2 class="sec-title">about</h2>
-          <div class="sec-line"></div>
-        </div>
-        <div class="about-grid">
-          <div class="about-text">
-            <p>
-              I'm a developer based in <span>your city</span>, focused on building things that are useful and well-made. I care about the details — clean interfaces, readable code, systems that hold up.
-            </p>
-            <p>
-              Currently open to <span>full-time roles</span> and freelance projects. I'm most comfortable in the frontend but I know my way around a backend.
-            </p>
-            <p>
-              When I'm not at a computer I'm usually <span>doing something here</span>.
-            </p>
-          </div>
-          <div class="about-terminal">
-            <div class="term-bar">
-              bash — 80×24
+        <section id="hero">
+          <div class="score-row">
+            <div class="score-block">
+              <span class="score-label">1UP</span>
+              <span class="score-value">000000</span>
             </div>
-            <div class="term-body">
-              <span class="tl"><span class="p">~</span> <span class="c">cat</span> me.json</span>
-              <span class="tl">{</span>
-              <span class="tl">&nbsp;&nbsp;<span class="k">"name"</span>: <span class="v">"Your Name"</span>,</span>
-              <span class="tl">&nbsp;&nbsp;<span class="k">"role"</span>: <span class="v">"developer"</span>,</span>
-              <span class="tl">&nbsp;&nbsp;<span class="k">"location"</span>: <span class="v">"your city"</span>,</span>
-              <span class="tl">&nbsp;&nbsp;<span class="k">"available"</span>: <span class="p">true</span>,</span>
-              <span class="tl">&nbsp;&nbsp;<span class="k">"interests"</span>: [</span>
-              <span class="tl">&nbsp;&nbsp;&nbsp;&nbsp;<span class="v">"open source"</span>,</span>
-              <span class="tl">&nbsp;&nbsp;&nbsp;&nbsp;<span class="v">"your interest"</span>,</span>
-              <span class="tl">&nbsp;&nbsp;&nbsp;&nbsp;<span class="v">"your interest"</span></span>
-              <span class="tl">&nbsp;&nbsp;]</span>
-              <span class="tl">}</span>
+            <div class="score-block">
+              <span class="score-label">HI-SCORE</span>
+              <span class="score-value">999999</span>
+            </div>
+            <div class="score-block">
+              <span class="score-label">2UP</span>
+              <span class="score-value">000000</span>
             </div>
           </div>
-        </div>
-      </section>
 
-      <!-- SKILLS -->
-      <section id="skills" class="code-section">
-        <div class="sec-header">
-          <span class="sec-num">02</span>
-          <h2 class="sec-title">skills</h2>
-          <div class="sec-line"></div>
-        </div>
-        <span class="code-comment">// skills.json — edit levels 1–5</span>
-        <br>
-        <table class="skills-table">
-          <thead>
-            <tr>
-              <th>name</th>
-              <th>category</th>
-              <th>level</th>
-            </tr>
-          </thead>
-          <tbody id="skills-body">
-          </tbody>
-        </table>
-      </section>
-
-      <!-- PROJECTS -->
-      <section id="projects" class="code-section">
-        <div class="sec-header">
-          <span class="sec-num">03</span>
-          <h2 class="sec-title">projects</h2>
-          <div class="sec-line"></div>
-        </div>
-        <div class="project-grid">
-          <!-- PLACEHOLDER — replace with real project cards once you have projects -->
-          <div class="proj-placeholder">
-            <div style="font-size:11px;margin-bottom:8px;color:var(--dim)">// TODO</div>
-            projects coming soon — check github for works in progress
+          <div class="hero-main">
+            <span class="player-tag">PLAYER ONE — PRESS START</span>
+            <span class="hero-name">YOUR<br>NAME.</span>
+            <p class="hero-sub">high school developer &nbsp;&middot;&nbsp; your city</p>
+            <div class="lives-row">
+              <span class="lives-label">LIVES</span>
+              <div class="heart"></div>
+              <div class="heart"></div>
+              <div class="heart"></div>
+            </div>
           </div>
+          <div class="px-rule"></div>
+        </section>
+
+        <section id="about" class="section reveal">
+          <div class="section-head">
+            <span class="section-badge badge-red">P1</span>
+            <h2 class="section-title">CHARACTER</h2>
+            <div class="section-rule"></div>
+          </div>
+          <div class="char-card">
+            <div class="char-left">
+              <div class="sprite">🧑‍💻</div>
+              <!-- swap the emoji above for a real photo:
+                   <img src="photo.jpg" style="width:96px;height:96px;object-fit:cover;border:2px solid #2a2a2a"> -->
+              <div class="char-id">
+                YOUR NAME
+                <span class="char-class">[ YOUR GRADE ]</span>
+              </div>
+              <div class="stat-list">
+                <div class="stat-item">
+                  <span class="stat-name">HTML / CSS</span>
+                  <div class="stat-track"><div class="stat-fill fill-red" data-w="80%"></div></div>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-name">JAVASCRIPT</span>
+                  <div class="stat-track"><div class="stat-fill fill-blue" data-w="60%"></div></div>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-name">PYTHON</span>
+                  <div class="stat-track"><div class="stat-fill fill-yellow" data-w="50%"></div></div>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-name">GIT</span>
+                  <div class="stat-track"><div class="stat-fill fill-green" data-w="65%"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="char-right">
+              <p class="char-bio">
+                Write your real bio here. Who you are, what got you into coding,
+                what you're working on right now. Keep it honest —
+                <strong>you're in high school building things from scratch</strong>,
+                that's already interesting.
+              </p>
+              <div class="char-specs">
+                <div class="spec-item">
+                  <span class="spec-key">SCHOOL</span>
+                  <span class="spec-val">Your School</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-key">GRADE</span>
+                  <span class="spec-val">Your Grade</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-key">LEARNING</span>
+                  <span class="spec-val">What you're into</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-key">INTERESTS</span>
+                  <span class="spec-val">Outside of code</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="skills" class="section reveal">
+          <div class="section-head">
+            <span class="section-badge badge-blue">INV</span>
+            <h2 class="section-title">INVENTORY</h2>
+            <div class="section-rule"></div>
+          </div>
+          <div class="inv-grid">
+
+            <div class="inv-item c-red">
+              <span class="inv-icon">🌐</span>
+              <span class="inv-name">HTML</span>
+              <div class="inv-stars">
+                <div class="star on"></div><div class="star on"></div><div class="star on"></div><div class="star on"></div><div class="star"></div>
+              </div>
+              <span class="eq">EQ</span>
+            </div>
+
+            <div class="inv-item c-blue">
+              <span class="inv-icon">🎨</span>
+              <span class="inv-name">CSS</span>
+              <div class="inv-stars">
+                <div class="star on"></div><div class="star on"></div><div class="star on"></div><div class="star on"></div><div class="star"></div>
+              </div>
+              <span class="eq">EQ</span>
+            </div>
+
+            <div class="inv-item c-yellow">
+              <span class="inv-icon">⚡</span>
+              <span class="inv-name">JavaScript</span>
+              <div class="inv-stars">
+                <div class="star on"></div><div class="star on"></div><div class="star on"></div><div class="star"></div><div class="star"></div>
+              </div>
+              <span class="eq">EQ</span>
+            </div>
+
+            <div class="inv-item c-green">
+              <span class="inv-icon">🐍</span>
+              <span class="inv-name">Python</span>
+              <div class="inv-stars">
+                <div class="star on"></div><div class="star on"></div><div class="star on"></div><div class="star"></div><div class="star"></div>
+              </div>
+            </div>
+
+            <div class="inv-item c-red">
+              <span class="inv-icon">🐙</span>
+              <span class="inv-name">Git</span>
+              <div class="inv-stars">
+                <div class="star on"></div><div class="star on"></div><div class="star on"></div><div class="star"></div><div class="star"></div>
+              </div>
+            </div>
+
+            <!-- add more slots here as you learn new things -->
+
+          </div>
+        </section>
+
+        <section id="projects-preview" class="section reveal">
+          <div class="section-head">
+            <span class="section-badge badge-yellow">LVL</span>
+            <h2 class="section-title">GAME SELECT</h2>
+            <div class="section-rule"></div>
+          </div>
+          <div style="border: 2px solid #1a1a1a; background: #0d0d0d; padding: 32px; text-align: center;">
+            <p style="font-family:'Press Start 2P',monospace; font-size:8px; color:#333; line-height:2.5; letter-spacing:1px; margin-bottom:28px;">
+              PROJECTS PAGE LOADING...<br>
+              MORE COMING SOON
+            </p>
+            <button class="start-btn" style="font-size:8px; padding:12px 24px; border-radius:4px;" onclick="showProjects()">
+              VIEW ALL PROJECTS →
+            </button>
+          </div>
+        </section>
+
+        <section id="contact-section" class="reveal">
+          <div class="section-head-contact section-head">
+            <span class="section-badge badge-green">END</span>
+            <h2 class="section-title">CONTINUE?</h2>
+            <div class="section-rule"></div>
+          </div>
+          <div class="contact-grid">
+            <div class="contact-left">
+              <div>
+                <span class="game-over-text">GAME<br>OVER</span>
+                <span class="continue-text">REACH OUT</span>
+                <span class="countdown" id="cd">9</span>
+              </div>
+              <p class="contact-note">
+                I'm a high schooler building stuff I find interesting. Feel free to reach out — always down to talk code.
+              </p>
+            </div>
+            <div class="contact-right">
+              <ul class="contact-links">
+                <li>
+                  <span class="cl-key">EMAIL</span>
+                  <a href="mailto:you@email.com">you@email.com</a>
+                </li>
+                <li>
+                  <span class="cl-key">GITHUB</span>
+                  <a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a>
+                </li>
+                <li>
+                  <span class="cl-key">LINKEDIN</span>
+                  <a href="https://linkedin.com/in/yourprofile" target="_blank">linkedin.com/in/yourprofile</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <div id="panel">
+      <div class="dpad-wrap">
+        <div class="dpad">
+          <div class="dp"></div>
+          <a class="dp" href="#hero">▲</a>
+          <div class="dp"></div>
+          <a class="dp" href="#about">◀</a>
+          <div class="dp center"></div>
+          <a class="dp" href="#projects-preview">▶</a>
+          <div class="dp"></div>
+          <a class="dp" href="#contact-section">▼</a>
+          <div class="dp"></div>
+        </div>
+        <span class="dpad-label">MOVE</span>
+      </div>
+
+      <div class="panel-center">
+        <button class="start-btn" onclick="insertCoin()">INSERT COIN</button>
+        <div class="coin-slot"></div>
+        <button class="start-btn" onclick="window.location='#hero'">START</button>
+      </div>
+
+      <div class="btn-cluster">
+        <div class="btn-row" style="justify-content:flex-end;padding-right:14px">
+          <a class="ab-btn btn-yellow" href="#skills">SK</a>
+        </div>
+        <div class="btn-row">
+          <a class="ab-btn btn-blue" href="#about">AB</a>
+          <a class="ab-btn btn-red" href="#contact-section">CT</a>
+        </div>
+        <div class="btn-row" style="padding-left:14px">
+          <button class="ab-btn btn-green" onclick="showProjects()">PJ</button>
+        </div>
+        <span class="btn-cluster-label">ACTION</span>
+      </div>
+    </div>
+
+    <div id="foot">
+      <span class="foot-text">© YOUR NAME 2025</span>
+      <span class="foot-text">BUILT WITH HTML + CSS + JS</span>
+      <span class="foot-text">1P ONLY</span>
+    </div>
+
+  </div><!-- end main-page -->
+
+
+  <!-- PROJECTS PAGE -->
+  <div id="projects-page">
+
+    <div class="page-topbar">
+      <button class="back-btn" onclick="showMain()">← BACK</button>
+      <span class="page-title">GAME SELECT</span>
+      <span class="project-count" id="proj-count">0 GAMES</span>
+    </div>
+
+    <div class="projects-inner">
+      <div class="cart-grid" id="cart-grid">
+
+        <!-- YOUR PROJECTS GO HERE.
+             Copy the block below for each project and fill it in.
+             Delete the cart-slot placeholder once you have at least one. -->
+
+        <div class="cart-slot" style="grid-column:1/-1">
+          <p>NO CARTRIDGES FOUND</p>
+          <p>PROJECTS WILL APPEAR HERE</p>
         </div>
 
         <!--
-          PROJECT CARD TEMPLATE — copy this block for each project:
 
-          <div class="project-card">
-            <div class="proj-index">project_01</div>
-            <div class="proj-title">Project Name</div>
-            <div class="proj-desc">What it does, what problem it solves.</div>
-            <div class="proj-stack">
-              <span class="proj-tag">React</span>
-              <span class="proj-tag">Node.js</span>
-            </div>
-            <div class="proj-links">
-              <a class="proj-link" href="#">→ github</a>
-              <a class="proj-link" href="#">→ live</a>
+        PASTE THIS FOR EACH PROJECT (remove the cart-slot above first):
+
+        <div class="cart">
+          <div class="cart-top ct-red"></div>
+          <div class="cart-label">
+            <div class="cart-label-inner">
+              <span class="cart-num">01</span>
+              <span class="cart-badge cb-red">WIP</span>
             </div>
           </div>
+          <div class="cart-body">
+            <div class="cart-name">PROJECT NAME</div>
+            <div class="cart-desc">
+              What it is and why you built it. Two sentences is enough.
+            </div>
+            <div class="cart-tags">
+              <span class="cart-tag">HTML</span>
+              <span class="cart-tag">CSS</span>
+              <span class="cart-tag">JavaScript</span>
+            </div>
+            <div class="cart-links">
+              <a class="cart-link" href="#">GITHUB</a>
+              <a class="cart-link" href="#">LIVE</a>
+            </div>
+          </div>
+        </div>
+
+        cart-top colors:   ct-red  ct-blue  ct-yellow  ct-green
+        cart-badge colors: cb-red  cb-blue  cb-yellow  cb-green
+        badge labels: WIP / DONE / LIVE / NEW
+
         -->
-      </section>
 
-      <!-- CONTACT -->
-      <section id="contact" class="code-section">
-        <div class="sec-header">
-          <span class="sec-num">04</span>
-          <h2 class="sec-title">contact</h2>
-          <div class="sec-line"></div>
-        </div>
-        <span class="code-comment">#!/bin/bash — reach out, I don't bite</span>
-        <br><br>
-        <div class="contact-block">
-          <p>
-            Open to roles, freelance work, or just talking shop. Response time is usually under 24 hours.
-          </p>
-          <ul class="contact-list">
-            <li>
-              <span class="cl-label">email</span>
-              <a href="mailto:you@email.com">you@email.com</a>
-            </li>
-            <li>
-              <span class="cl-label">github</span>
-              <a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a>
-            </li>
-            <li>
-              <span class="cl-label">linkedin</span>
-              <a href="https://linkedin.com/in/yourprofile" target="_blank">linkedin.com/in/yourprofile</a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      </div>
+    </div>
 
-      <div style="height: 4rem;"></div>
+    <div id="foot">
+      <span class="foot-text">© YOUR NAME 2025</span>
+      <span class="foot-text">← BACK TO HOME</span>
+      <span class="foot-text">1P ONLY</span>
+    </div>
 
-    </div><!-- end code-area -->
-  </div><!-- end editor -->
-</div><!-- end editor-wrap -->
+  </div><!-- end projects-page -->
 
-<!-- STATUS BAR -->
-<div id="statusbar">
-  <span class="sb-item"><strong>yourname</strong>.dev</span>
-  <span class="sb-item">UTF-8</span>
-  <span class="sb-item">HTML</span>
-  <div class="sb-right">
-    <span class="sb-item" id="sb-line">Ln 1, Col 1</span>
-    <span class="sb-item">Spaces: 2</span>
-  </div>
-</div>
+</div><!-- end shell -->
 
 <script>
-  // SKILL DATA — edit names, categories, and levels (1–5)
-  const skills = [
-    { name: 'JavaScript',  cat: 'language',  lvl: 4 },
-    { name: 'HTML / CSS',  cat: 'language',  lvl: 4 },
-    { name: 'Python',      cat: 'language',  lvl: 3 },
-    { name: 'React',       cat: 'framework', lvl: 3 },
-    { name: 'Node.js',     cat: 'runtime',   lvl: 3 },
-    { name: 'Git',         cat: 'tool',      lvl: 4 },
-    { name: 'PostgreSQL',  cat: 'database',  lvl: 2 },
-    { name: 'Figma',       cat: 'design',    lvl: 2 },
-  ];
-
-  const lvlLabel = ['','beginner','learning','proficient','advanced','expert'];
-
-  const tbody = document.getElementById('skills-body');
-  skills.forEach(s => {
-    const pct = (s.lvl / 5) * 100;
-    tbody.innerHTML += `
-      <tr>
-        <td class="skill-name">${s.name}</td>
-        <td style="color:var(--muted)">${s.cat}</td>
-        <td>
-          <div class="skill-level">
-            <div class="level-bar"><div class="level-fill" style="width:${pct}%"></div></div>
-            <span class="level-text">${lvlLabel[s.lvl]}</span>
-          </div>
-        </td>
-      </tr>`;
-  });
-
-  // LINE NUMBERS
-  const lineNums = document.getElementById('line-nums');
-  for (let i = 1; i <= 180; i++) {
-    lineNums.innerHTML += i + '<br>';
+  function showProjects() {
+    document.getElementById('main-page').classList.add('hidden');
+    document.getElementById('projects-page').classList.add('active');
+    window.scrollTo(0, 0);
+    const carts = document.querySelectorAll('#cart-grid .cart');
+    document.getElementById('proj-count').textContent = carts.length + ' GAME' + (carts.length !== 1 ? 'S' : '');
   }
 
-  // SCROLL FADE-IN
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.08 });
-  document.querySelectorAll('.code-section').forEach(s => observer.observe(s));
+  function showMain() {
+    document.getElementById('projects-page').classList.remove('active');
+    document.getElementById('main-page').classList.remove('hidden');
+    window.scrollTo(0, 0);
+  }
 
-  // STATUS BAR LINE/COL
-  document.addEventListener('mousemove', e => {
-    const ln = Math.floor(e.clientY / 19) + 1;
-    const col = Math.floor(e.clientX / 8) + 1;
-    document.getElementById('sb-line').textContent = `Ln ${ln}, Col ${col}`;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('on');
+      e.target.querySelectorAll('.stat-fill[data-w]').forEach(b => {
+        setTimeout(() => b.style.width = b.dataset.w, 150);
+      });
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  let n = 9;
+  const cd = document.getElementById('cd');
+  setInterval(() => { n = n > 1 ? n - 1 : 9; cd.textContent = n; }, 1000);
+
+  function insertCoin() {
+    const m = document.querySelector('.marquee-track');
+    m.style.animationDuration = '6s';
+    setTimeout(() => m.style.animationDuration = '20s', 2000);
+  }
+
+  document.querySelectorAll('.ab-btn').forEach(btn => {
+    btn.addEventListener('mousedown', () => btn.classList.add('pressed'));
+    document.addEventListener('mouseup', () => btn.classList.remove('pressed'));
   });
 
-  // ACTIVE TAB highlight on scroll
-  const sections = document.querySelectorAll('section[id]');
-  const tabs = document.querySelectorAll('.tb-tab');
-  window.addEventListener('scroll', () => {
-    let cur = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 100) cur = s.id;
-    });
-    tabs.forEach(t => {
-      t.classList.toggle('active', t.getAttribute('href') === '#' + cur);
-    });
-  }, { passive: true });
+  const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let ki = 0;
+  document.addEventListener('keydown', e => {
+    ki = e.key === konami[ki] ? ki + 1 : 0;
+    if (ki === konami.length) {
+      document.querySelector('.hero-name').style.color = '#e8002d';
+      document.querySelector('.player-tag').textContent = '★ CHEAT CODE ACTIVATED ★';
+      ki = 0;
+    }
+  });
 </script>
+
 </body>
 </html>
